@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+<!--    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">-->
+<!--        <property name="location" value="application.properties"/>-->
+<!--    </bean>-->
+
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <bean id="repo1" name="r1,r2"  class = "spring.database.repository.UserRepository" init-method="init" destroy-method="destroy">
+        <constructor-arg name="userName" value="${db.username}"/>
+        <constructor-arg name="poolSize" value="${db.pool.size}"/>
+        <constructor-arg name="args">
+           <list>
+               <value>1</value>
+               <value>2</value>
+               <value>3</value>
+           </list>
+        </constructor-arg>
+        <constructor-arg name="properties">
+            <map>
+                <entry key="user" value="#{driver.replace('a', 'b')}"/>
+                <entry key="adress" value="Minsk"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id = "repo2" class = "spring.database.repository.UserRepository">
+        <property name="userName" ref="driver"/>
+        <property name="properties">
+            <map>
+                <entry key="user" value="Andrei"/>
+                <entry key="adress" value="Minsk"/>
+            </map>
+        </property>
+    </bean>
+
+
+    <bean name="driver" class="java.lang.String">
+        <constructor-arg value="PostgresDriver"/>
+    </bean>
+
+    <bean name="userDto" class="spring.dto.UserDto" scope="prototype"/>
+
+    <bean name="userMapper" class="spring.mapper.UserMapper">
+        <constructor-arg ref="userDto"/>
+    </bean>
+
+    <bean name="userService" class="spring.service.UserService">
+        <constructor-arg name="UserRepository" ref="repo1"/>
+        <constructor-arg name="userMapper" ref="userMapper"/>
+    </bean>
+
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
